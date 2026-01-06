@@ -3,6 +3,7 @@ import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import Canvas from './Canvas';
+import Snackbar from '@mui/material/Snackbar';
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -27,12 +28,20 @@ const linesColors = [
 
 function Gridlines() {
   const [showOptions, setShowOptions] = useState(true);
+  const [showSnackbar, setShowSnackbar] = useState(false);
   const [files, setFiles] = useState<FileList | null>(null);
   const [rows, setRows] = useState(3);
   const [cols, setCols] = useState(3);
   const [linesColor, setLinesColor] = useState(linesColors[0].value);
   const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFiles(event.target.files);
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    console.log(event.target.files);
+    if (event.target.files && allowedTypes.includes(event.target.files[0].type)) {
+      setFiles(event.target.files);
+    } else {
+      setFiles(null);
+      setShowSnackbar(true);
+    }
   };
   const changeFullscreen = () => {
     if (!document.fullscreenElement) {
@@ -44,7 +53,6 @@ function Gridlines() {
     }
   }
   const onCanvasClick = () => {
-    console.log('Canvas clicked');
     setShowOptions(!showOptions);
     changeFullscreen();
   }
@@ -67,6 +75,15 @@ function Gridlines() {
               multiple
             />
           </Button>
+          {/* top */}
+          <Snackbar
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            open={showSnackbar}
+            onClose={ () => setShowSnackbar(false) }
+            message="僅支援 JPG、PNG 格式的圖片檔案"
+            key={'topcenter'}
+            autoHideDuration={3000}
+          />
           <div className='flex my-3 gap-3'>
             {
               gridOptions.map((option, index) => (
