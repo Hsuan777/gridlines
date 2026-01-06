@@ -5,8 +5,11 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
-  build-and-deploy:
+  deploy: # 可自訂工作名稱
     runs-on: ubuntu-latest
 
     steps:
