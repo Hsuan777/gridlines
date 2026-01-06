@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: CI/CD Pipeline
 
 on:
   push:
@@ -9,29 +9,31 @@ permissions:
   contents: write
 
 jobs:
-  deploy: # 可自訂工作名稱
+  setup:
     runs-on: ubuntu-latest
-
     steps:
-      # 檢出程式碼
       - name: Checkout code
         uses: actions/checkout@v3
-
-      # 設置 Node.js 環境
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 24
-
-      # 安裝依賴
       - name: Install dependencies
         run: npm install
 
-      # 建置專案
+  lint:
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: Run ESLint
+        run: npm run lint
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
       - name: Build project
         run: npm run build
-
-      # 部署到 gh-pages 分支
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
