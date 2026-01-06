@@ -9,33 +9,53 @@ permissions:
   contents: write
 
 jobs:
-  setup:
+  deploy: # 可自訂工作名稱
     runs-on: ubuntu-latest
+
     steps:
+      # 檢出程式碼
       - name: Checkout code
         uses: actions/checkout@v3
+
+      # 設置 Node.js 環境
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 24
+
+      # 安裝依賴
       - name: Install dependencies
         run: npm install
 
-  lint:
-    runs-on: ubuntu-latest
-    needs: setup
-    steps:
-      - name: Run ESLint
-        run: npm run lint
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: setup
-    steps:
+      # 建置專案
       - name: Build project
         run: npm run build
+
+      # 部署到 gh-pages 分支
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
+
+  lint:
+      runs-on: ubuntu-latest
+
+      steps:
+        # 檢出程式碼
+        - name: Checkout code
+          uses: actions/checkout@v3
+
+        # 設置 Node.js 環境
+        - name: Set up Node.js
+          uses: actions/setup-node@v3
+          with:
+            node-version: 24
+
+        # 安裝依賴
+        - name: Install dependencies
+          run: npm install
+
+        # 執行 ESLint 檢測
+        - name: Run ESLint
+          run: npm run lint
